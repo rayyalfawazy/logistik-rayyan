@@ -24,7 +24,7 @@ class BarangKeluarController extends Controller
             'tanggal_keluar' => 'required|date',
         ]);
 
-        // Cek stok barang
+        // Cek stok barang dan tampilkan error
         $stok = StokBarang::where('kode_barang', $request->kode_barang)->first();
         if (!$stok) {
             return redirect()->route('barang-keluar')->withErrors('Barang tidak ditemukan di stok.');
@@ -40,9 +40,8 @@ class BarangKeluarController extends Controller
         // Kurangi stok barang
         $stok->quantity -= $request->quantity;
 
-        // Jika stok habis, hapus barang dari stok dan barang masuk terkait
+        // Jika stok habis, hapus barang dari stok barang
         if ($stok->quantity <= 0) {
-            // BarangMasuk::where('kode_barang', $request->kode_barang)->delete();
             $stok->delete();
         } else {
             $stok->save();

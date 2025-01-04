@@ -24,17 +24,33 @@ class BarangMasukController extends Controller
             'tanggal_masuk' => 'required|date',
         ]);
 
-        // Simpan ke tabel barang masuk
-        BarangMasuk::create($request->all());
+        // Periksa apakah kode_barang sudah ada di tabel barang_masuk
+        $existingBarangMasuk = BarangMasuk::where('kode_barang', $request->kode_barang)->first();
 
-        // Tambahkan atau perbarui stok barang
-        $stok = StokBarang::firstOrCreate(
-            ['kode_barang' => $request->kode_barang],
-            ['nama_barang' => $request->nama_barang]
-        );
-        $stok->quantity += $request->quantity;
-        $stok->save();
+        if ($existingBarangMasuk) {
+            $existingBarangMasuk->quantity = $request->quantity;
+            $existingBarangMasuk->nama_barang = $request->nama_barang;
+            $existingBarangMasuk->origin = $request->origin ?: $existingBarangMasuk->origin;
+            $existingBarangMasuk->tanggal_masuk = $request->tanggal_masuk;
+            $existingBarangMasuk->save();
 
-        return redirect()->route('barang-masuk')->with('success', 'Barang masuk berhasil ditambahkan.');
+            $stok = StokBarang::where('kode_barang', $request->kode_barang)->first();
+            if ($stok) {
+                $stok->quantity = $request->quantity;
+                $stok->nama_barang = $request->nama_barang;
+                $stok->save();
+            }
+        } else {
+            BarangMasuk::create($request->all());
+
+            // Tambahkan atau perbarui stok barang
+            $stok = StokBarang::firstOrCreate(
+                ['kode_barang' => $request->kode_barang],
+                ['nama_barang' => $request->nama_barang]
+            );
+            $stok->quantity += $request->quantity;
+            $stok->save();
+        }
+        return redirect()->route('barang-masuk')->with('success', 'Barang masuk berhasil diproses.');
     }
 }
