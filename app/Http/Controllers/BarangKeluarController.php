@@ -42,7 +42,7 @@ class BarangKeluarController extends Controller
 
         // Jika stok habis, hapus barang dari stok dan barang masuk terkait
         if ($stok->quantity <= 0) {
-            BarangMasuk::where('kode_barang', $request->kode_barang)->delete();
+            // BarangMasuk::where('kode_barang', $request->kode_barang)->delete();
             $stok->delete();
         } else {
             $stok->save();

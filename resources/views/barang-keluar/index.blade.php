@@ -52,7 +52,7 @@
         @foreach ($barangKeluar as $item)
         <tr>
             <td>{{ $item->kode_barang }}</td>
-            <td>{{ $item->stokBarang->nama_barang ?? 'N/A' }}</td>
+            <td>{{ $item->nama_barang }}</td>
             <td>{{ $item->quantity }}</td>
             <td>{{ $item->destination }}</td>
             <td>{{ $item->tanggal_keluar }}</td>
