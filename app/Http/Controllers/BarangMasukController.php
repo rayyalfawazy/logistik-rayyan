@@ -24,10 +24,10 @@ class BarangMasukController extends Controller
             'tanggal_masuk' => 'required|date',
         ]);
 
-        // Periksa apakah kode_barang sudah ada di tabel barang_masuk
         $existingBarangMasuk = BarangMasuk::where('kode_barang', $request->kode_barang)->first();
 
         if ($existingBarangMasuk) {
+            // Periksa apakah kode_barang sudah ada di tabel barang_masuk
             $existingBarangMasuk->quantity = $request->quantity;
             $existingBarangMasuk->nama_barang = $request->nama_barang;
             $existingBarangMasuk->origin = $request->origin ?: $existingBarangMasuk->origin;
@@ -43,7 +43,7 @@ class BarangMasukController extends Controller
         } else {
             BarangMasuk::create($request->all());
 
-            // Tambahkan atau perbarui stok barang
+            // Jika kode barang belum ada di tabel stok barang, tambahkan atau perbarui stok barang
             $stok = StokBarang::firstOrCreate(
                 ['kode_barang' => $request->kode_barang],
                 ['nama_barang' => $request->nama_barang]
